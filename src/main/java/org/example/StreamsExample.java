@@ -93,15 +93,35 @@ public class StreamsExample {
                 .orElse(0.0));
         banner("Active authors that have at least one published book");
         // TODO With functional interfaces declared
+        Predicate<Book> publishedBookPredicate
+                = new Predicate<Book>() {
+            @Override
+            public boolean test(Book book) {
+                return book.published;
+            }
+        };
 
+        Predicate<Author> activeAuthorWithPublishedBookPredicate
+                = new Predicate<Author>() {
+            @Override
+            public boolean test(Author author) {
+                return author.active
+                        && author.books.stream()
+                                .anyMatch(publishedBookPredicate);
+            }
+        };
+
+        authors.stream()
+                .filter(activeAuthorWithPublishedBookPredicate)
+                .forEach(System.out::println);
         banner("Active authors that have at least one published book - lambda");
         // TODO With functional interfaces used directly
-        authors.stream().filter(author -> author.active).forEach(
-                author
-                -> author.books.stream()
-                        .filter(book -> book.published)
-                        .forEach(System.out::println)
-        );
+        authors.stream()
+                .filter(author
+                        -> author.active
+                && author.books.stream().anyMatch(book -> book.published)
+                )
+                .forEach(System.out::println);
 
     }
 
