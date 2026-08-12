@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
+import java.util.stream.Stream;
 
 public class StreamsExample {
 
@@ -44,6 +47,20 @@ public class StreamsExample {
 
         banner("Active books for all authors");
         // TODO With functional interfaces declared
+        Predicate<Book> activeBookPredicate = new Predicate<Book>() {
+            @Override
+            public boolean test(Book book) {
+                return book.published;
+            }
+        };
+        Function<Author, Stream<Book>> booksExtractor
+                = new Function<Author, Stream<Book>>() {
+            @Override
+            public Stream<Book> apply(Author author) {
+                return author.books.stream();
+            }
+        };
+        authors.stream().flatMap(booksExtractor).filter(activeBookPredicate).forEach(System.out::println);
 
         banner("Active books for all authors - lambda");
         // TODO With functional interfaces used directly
@@ -51,8 +68,21 @@ public class StreamsExample {
                 .flatMap(author -> author.books.stream())
                 .filter(book -> book.published)
                 .forEach(System.out::println);
+
         banner("Average price for all books in the library");
         // TODO With functional interfaces declared
+        ToDoubleFunction<Book> priceFunction
+                = new ToDoubleFunction<Book>() {
+            @Override
+            public double applyAsDouble(Book book) {
+                return book.price;
+            }
+        };
+        System.out.println(authors.stream()
+                .flatMap(booksExtractor)
+                .mapToDouble(priceFunction)
+                .average()
+                .orElse(0.0));
 
         banner("Average price for all books in the library - lambda");
         // TODO With functional interfaces used directly
