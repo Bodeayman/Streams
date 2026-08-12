@@ -12,31 +12,7 @@ public class LambdaExample {
 
         final UsersRepository repository = new UsersRepository();
 
-        banner("Listing all users");
-        // SOLVED all users
-        repository.select(null, null);
-
-        banner("Listing all active users");
-        // SOLVED With functional interfaces declared
-        Predicate<User> activeUserPredicate = new Predicate<User>() {
-            @Override
-            public boolean test(User user) {
-                return user.active;
-            }
-        };
-        repository.select(activeUserPredicate, null);
-
-        banner("Listing all active users - lambda");
-        // SOLVED With functional interfaces used directly
-        repository.select(user -> user.active, null);
-
-        banner("Listing users with age > 5 sorted by name");
-        Predicate<User> usersOlderThan5Predicate = new Predicate<User>() {
-            @Override
-            public boolean test(User user) {
-                return user.age > 5;
-            }
-        };
+        /* Shared Functions */
         Comparator<User> byName = new Comparator<User>() {
             @Override
             public int compare(User a, User b) {
@@ -51,6 +27,36 @@ public class LambdaExample {
                 return Integer.compare(a.age, b.age);
             }
         };
+        Predicate<User> activeUserPredicate = new Predicate<User>() {
+            @Override
+            public boolean test(User user) {
+                return user.active;
+            }
+        };
+
+
+        /* Tasks */
+        banner("Listing all users");
+        // SOLVED all users
+        repository.select(null, null);
+
+        banner("Listing all active users");
+        // SOLVED With functional interfaces declared
+
+        repository.select(activeUserPredicate, null);
+
+        banner("Listing all active users - lambda");
+        // SOLVED With functional interfaces used directly
+        repository.select(user -> user.active, null);
+
+        banner("Listing users with age > 5 sorted by name");
+        Predicate<User> usersOlderThan5Predicate = new Predicate<User>() {
+            @Override
+            public boolean test(User user) {
+                return user.age > 5;
+            }
+        };
+
         repository.select(usersOlderThan5Predicate, byName);
 
         banner("Listing users with age > 5 sorted by name - lambda");

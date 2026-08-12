@@ -15,6 +15,29 @@ public class StreamsExample {
 
         List<Author> authors = Library.getAuthors();
 
+        /* Shared Functions */
+        Predicate<Author> activeAuthorPredicate = new Predicate<Author>() {
+            @Override
+            public boolean test(Author author) {
+                return author.active;
+            }
+        };
+        Predicate<Book> publishedBookPredicate
+                = new Predicate<Book>() {
+            @Override
+            public boolean test(Book book) {
+                return book.published;
+            }
+        };
+        Function<Author, Stream<Book>> booksExtractor
+                = new Function<Author, Stream<Book>>() {
+            @Override
+            public Stream<Book> apply(Author author) {
+                return author.books.stream();
+            }
+        };
+
+        /* Tasks */
         banner("Authors information");
         // SOLVED With functional interfaces declared
         Consumer<Author> authorPrintConsumer = new Consumer<Author>() {
@@ -33,13 +56,8 @@ public class StreamsExample {
                 .forEach(System.out::println);
 
         banner("Active authors");
-        Predicate<Author> activeAuthorPredicate = new Predicate<Author>() {
-            @Override
-            public boolean test(Author author) {
-                return author.active;
-            }
-        };
-        authors.stream().filter(activeAuthorPredicate);
+
+        authors.stream().filter(activeAuthorPredicate).forEach(System.out::println);
 
         banner("Active authors - lambda");
         // TODO With functional interfaces used directly
@@ -47,20 +65,8 @@ public class StreamsExample {
 
         banner("Active books for all authors");
         // TODO With functional interfaces declared
-        Predicate<Book> activeBookPredicate = new Predicate<Book>() {
-            @Override
-            public boolean test(Book book) {
-                return book.published;
-            }
-        };
-        Function<Author, Stream<Book>> booksExtractor
-                = new Function<Author, Stream<Book>>() {
-            @Override
-            public Stream<Book> apply(Author author) {
-                return author.books.stream();
-            }
-        };
-        authors.stream().flatMap(booksExtractor).filter(activeBookPredicate).forEach(System.out::println);
+
+        authors.stream().flatMap(booksExtractor).filter(publishedBookPredicate).forEach(System.out::println);
 
         banner("Active books for all authors - lambda");
         // TODO With functional interfaces used directly
@@ -93,13 +99,6 @@ public class StreamsExample {
                 .orElse(0.0));
         banner("Active authors that have at least one published book");
         // TODO With functional interfaces declared
-        Predicate<Book> publishedBookPredicate
-                = new Predicate<Book>() {
-            @Override
-            public boolean test(Book book) {
-                return book.published;
-            }
-        };
 
         Predicate<Author> activeAuthorWithPublishedBookPredicate
                 = new Predicate<Author>() {
